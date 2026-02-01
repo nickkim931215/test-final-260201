@@ -30,12 +30,85 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1200px;
             width: 100%;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            display: flex;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .director-panel {
+            width: 350px;
+            background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            display: none;
+            flex-direction: column;
+            border-left: 3px solid #f093fb;
+        }
+
+        .director-panel.active {
+            display: flex;
+        }
+
+        .director-avatar-large {
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .director-speech {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .director-speech::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 20px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid white;
+        }
+
+        .director-speech h3 {
+            color: #d63384;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .director-speech p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .director-tip {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
         }
 
         .screen {
@@ -401,6 +474,18 @@
             background: #45a049;
         }
 
+        @media (max-width: 1000px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .director-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 3px solid #f093fb;
+            }
+        }
+
         @media (max-width: 600px) {
             .content {
                 padding: 30px 20px;
@@ -421,11 +506,20 @@
             .color-palette {
                 grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
             }
+
+            .director-panel {
+                padding: 20px;
+            }
+
+            .director-avatar-large {
+                font-size: 3em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="main-content">
         <!-- 시작 화면 -->
         <div class="screen active" id="startScreen">
             <div class="content">
@@ -507,110 +601,88 @@
                 <button class="btn" onclick="restartTest()" style="margin-top: 15px;">다시 테스트하기</button>
             </div>
         </div>
+        </div>
+
+        <!-- 채안 원장 패널 -->
+        <div class="director-panel" id="directorPanel">
+            <div class="director-avatar-large">👩‍⚕️</div>
+            <div class="director-speech">
+                <h3>💕 채안 원장</h3>
+                <p id="directorComment">안녕하세요! 퍼스널 컬러 전문가 채안입니다.</p>
+            </div>
+            <div class="director-tip" id="directorExtraTip">
+                💡 편안하게 직관적으로 답변해주세요!
+            </div>
+        </div>
     </div>
 
     <script>
-        // 질문 데이터
+        // 질문 데이터 (6개로 축소, 더 심도있게)
         const questions = [
             {
-                question: "거울을 보았을 때, 내 피부톤은?",
+                question: "자연광에서 손목 안쪽을 봤을 때, 혈관 색상과 피부 느낌은?",
+                directorComment: "혈관 색상은 퍼스널 컬러를 판단하는 가장 중요한 기준 중 하나예요! 자연광에서 정확히 관찰해주세요.",
+                directorTip: "💡 형광등 아래가 아닌 창가에서 확인하세요!",
                 options: [
-                    { text: "밝고 투명한 느낌의 피부", scores: { spring: 3, summer: 2, autumn: 0, winter: 1 } },
-                    { text: "부드럽고 은은한 느낌의 피부", scores: { spring: 1, summer: 3, autumn: 1, winter: 0 } },
-                    { text: "따뜻하고 노란기가 도는 피부", scores: { spring: 2, summer: 0, autumn: 3, winter: 0 } },
-                    { text: "차갑고 깨끗한 느낌의 피부", scores: { spring: 0, summer: 1, autumn: 0, winter: 3 } }
+                    { text: "초록빛 혈관 + 따뜻하고 노란기 도는 피부", scores: { spring: 4, summer: 0, autumn: 4, winter: 0 } },
+                    { text: "초록빛 혈관 + 밝고 투명한 피부", scores: { spring: 4, summer: 1, autumn: 2, winter: 0 } },
+                    { text: "파란빛 혈관 + 부드럽고 은은한 피부", scores: { spring: 0, summer: 4, autumn: 0, winter: 2 } },
+                    { text: "파란빛 혈관 + 차갑고 맑은 피부", scores: { spring: 0, summer: 1, autumn: 0, winter: 4 } }
                 ]
             },
             {
-                question: "손목 안쪽 혈관 색은?",
+                question: "골드 액세서리 vs 실버 액세서리를 착용했을 때, 어느 쪽이 더 피부와 자연스럽게 어울리나요?",
+                directorComment: "액세서리 테스트는 웜톤과 쿨톤을 명확하게 구분할 수 있는 방법이에요. 거울을 보고 어느 쪽이 더 얼굴을 환하게 만드는지 확인해보세요!",
+                directorTip: "💡 골드=웜톤, 실버=쿨톤의 기본 원칙!",
                 options: [
-                    { text: "초록빛이 도는 혈관", scores: { spring: 3, summer: 0, autumn: 3, winter: 0 } },
-                    { text: "파란빛이 도는 혈관", scores: { spring: 0, summer: 3, autumn: 0, winter: 3 } },
-                    { text: "잘 모르겠다", scores: { spring: 1, summer: 1, autumn: 1, winter: 1 } }
+                    { text: "골드가 훨씬 잘 어울린다", scores: { spring: 4, summer: 0, autumn: 4, winter: 0 } },
+                    { text: "골드가 약간 더 어울린다", scores: { spring: 3, summer: 1, autumn: 3, winter: 0 } },
+                    { text: "실버가 약간 더 어울린다", scores: { spring: 0, summer: 3, autumn: 0, winter: 3 } },
+                    { text: "실버가 훨씬 잘 어울린다", scores: { spring: 0, summer: 4, autumn: 0, winter: 4 } }
                 ]
             },
             {
-                question: "나에게 더 어울리는 액세서리는?",
+                question: "눈동자, 머리카락 색상과 햇볕 반응은?",
+                directorComment: "눈동자와 머리카락의 색깔, 그리고 자외선에 대한 피부 반응은 계절 타입을 세분화하는 핵심 요소예요!",
+                directorTip: "💡 밝은 = Spring/Summer, 진한 = Autumn/Winter",
                 options: [
-                    { text: "골드 계열 액세서리", scores: { spring: 3, summer: 0, autumn: 3, winter: 0 } },
-                    { text: "실버 계열 액세서리", scores: { spring: 0, summer: 3, autumn: 0, winter: 3 } }
+                    { text: "밝은 갈색 눈동자/머리 + 햇볕에 빨개졌다 갈색으로", scores: { spring: 4, summer: 1, autumn: 2, winter: 0 } },
+                    { text: "회갈색/부드러운 갈색 + 쉽게 빨개지고 잘 안탐", scores: { spring: 1, summer: 4, autumn: 0, winter: 1 } },
+                    { text: "짙은 갈색/황갈색 + 잘 타고 갈색으로 변함", scores: { spring: 1, summer: 0, autumn: 4, winter: 1 } },
+                    { text: "새까만 흑색 + 거의 타지 않음", scores: { spring: 0, summer: 1, autumn: 1, winter: 4 } }
                 ]
             },
             {
-                question: "눈동자와 머리카락 색은?",
+                question: "흰색 vs 아이보리 옷을 입었을 때, 그리고 검은색 옷을 입었을 때의 느낌은?",
+                directorComment: "이 질문은 정말 중요해요! 흰색과 아이보리는 쿨톤/웜톤을, 검은색은 명도(밝기)를 판단하는 기준이 됩니다.",
+                directorTip: "💡 거울을 보며 얼굴이 환해지는지, 칙칙해지는지 관찰하세요!",
                 options: [
-                    { text: "밝은 갈색 또는 연한 흑갈색", scores: { spring: 3, summer: 1, autumn: 1, winter: 0 } },
-                    { text: "회갈색 또는 부드러운 갈색", scores: { spring: 1, summer: 3, autumn: 0, winter: 0 } },
-                    { text: "짙은 갈색 또는 황갈색", scores: { spring: 0, summer: 0, autumn: 3, winter: 1 } },
-                    { text: "새까만 흑색", scores: { spring: 0, summer: 0, autumn: 1, winter: 3 } }
+                    { text: "아이보리가 잘 어울림 + 검정은 얼굴이 어두워짐", scores: { spring: 4, summer: 0, autumn: 3, winter: 0 } },
+                    { text: "아이보리가 잘 어울림 + 검정도 괜찮음", scores: { spring: 2, summer: 0, autumn: 4, winter: 0 } },
+                    { text: "흰색이 잘 어울림 + 검정은 얼굴이 어두워짐", scores: { spring: 0, summer: 4, autumn: 0, winter: 2 } },
+                    { text: "흰색이 잘 어울림 + 검정도 또렷하고 좋음", scores: { spring: 0, summer: 2, autumn: 0, winter: 4 } }
                 ]
             },
             {
-                question: "햇볕에 타면?",
+                question: "가장 칭찬을 많이 받았던 컬러와 얼굴 인상은?",
+                directorComment: "다른 사람들의 반응도 중요한 힌트예요! 어떤 색을 입었을 때 '잘 어울린다', '안색이 좋아 보인다'는 말을 들으셨나요?",
+                directorTip: "💡 주변 사람들의 칭찬에 귀 기울여보세요!",
                 options: [
-                    { text: "쉽게 빨개지고 잘 타지 않는다", scores: { spring: 2, summer: 3, autumn: 0, winter: 2 } },
-                    { text: "빨개졌다가 갈색으로 변한다", scores: { spring: 3, summer: 1, autumn: 3, winter: 0 } },
-                    { text: "거의 타지 않는다", scores: { spring: 0, summer: 2, autumn: 0, winter: 3 } }
+                    { text: "코랄/피치/베이지 + 밝고 생기있는 인상", scores: { spring: 4, summer: 1, autumn: 1, winter: 0 } },
+                    { text: "라벤더/로즈핑크/민트 + 부드럽고 우아한 인상", scores: { spring: 1, summer: 4, autumn: 0, winter: 1 } },
+                    { text: "카키/테라코타/올리브 + 차분하고 성숙한 인상", scores: { spring: 1, summer: 0, autumn: 4, winter: 1 } },
+                    { text: "네이비/버건디/블랙 + 시원하고 도시적인 인상", scores: { spring: 0, summer: 1, autumn: 1, winter: 4 } }
                 ]
             },
             {
-                question: "흰색 옷 vs 아이보리 옷, 더 어울리는 것은?",
+                question: "립스틱과 블러셔 컬러 중 가장 자연스럽고 잘 어울리는 계열은?",
+                directorComment: "메이크업 컬러는 퍼스널 컬러를 최종 확정하는 결정적 단서예요! 어떤 톤의 립과 블러셔가 당신을 가장 빛나게 하나요?",
+                directorTip: "💡 여러 제품을 발색해보고 가장 자연스러운 것을 선택하세요!",
                 options: [
-                    { text: "새하얀 흰색", scores: { spring: 0, summer: 2, autumn: 0, winter: 3 } },
-                    { text: "따뜻한 아이보리", scores: { spring: 3, summer: 0, autumn: 3, winter: 0 } },
-                    { text: "둘 다 괜찮다", scores: { spring: 1, summer: 2, autumn: 1, winter: 1 } }
-                ]
-            },
-            {
-                question: "나에게 잘 어울린다는 말을 들었던 색은?",
-                options: [
-                    { text: "코랄, 피치, 라이트 베이지", scores: { spring: 3, summer: 0, autumn: 1, winter: 0 } },
-                    { text: "라벤더, 로즈핑크, 민트", scores: { spring: 0, summer: 3, autumn: 0, winter: 1 } },
-                    { text: "카키, 테라코타, 올리브", scores: { spring: 1, summer: 0, autumn: 3, winter: 0 } },
-                    { text: "네이비, 버건디, 블랙", scores: { spring: 0, summer: 1, autumn: 0, winter: 3 } }
-                ]
-            },
-            {
-                question: "내 얼굴의 전체적인 인상은?",
-                options: [
-                    { text: "밝고 생기있는 느낌", scores: { spring: 3, summer: 1, autumn: 0, winter: 1 } },
-                    { text: "부드럽고 우아한 느낌", scores: { spring: 1, summer: 3, autumn: 0, winter: 0 } },
-                    { text: "차분하고 성숙한 느낌", scores: { spring: 0, summer: 0, autumn: 3, winter: 1 } },
-                    { text: "시원하고 도시적인 느낌", scores: { spring: 0, summer: 1, autumn: 0, winter: 3 } }
-                ]
-            },
-            {
-                question: "립스틱을 바를 때 더 잘 어울리는 색은?",
-                options: [
-                    { text: "코랄, 오렌지 계열", scores: { spring: 3, summer: 0, autumn: 2, winter: 0 } },
-                    { text: "로즈, 핑크 계열", scores: { spring: 1, summer: 3, autumn: 0, winter: 1 } },
-                    { text: "브라운, 벽돌 레드 계열", scores: { spring: 0, summer: 0, autumn: 3, winter: 0 } },
-                    { text: "와인, 퓨샤 계열", scores: { spring: 0, summer: 1, autumn: 0, winter: 3 } }
-                ]
-            },
-            {
-                question: "노란색 옷을 입으면?",
-                options: [
-                    { text: "얼굴이 환해 보인다", scores: { spring: 3, summer: 0, autumn: 2, winter: 0 } },
-                    { text: "얼굴이 칙칙해 보인다", scores: { spring: 0, summer: 3, autumn: 0, winter: 3 } },
-                    { text: "잘 모르겠다", scores: { spring: 1, summer: 1, autumn: 1, winter: 1 } }
-                ]
-            },
-            {
-                question: "평소 선호하는 패션 스타일은?",
-                options: [
-                    { text: "경쾌하고 발랄한 스타일", scores: { spring: 3, summer: 1, autumn: 0, winter: 0 } },
-                    { text: "우아하고 로맨틱한 스타일", scores: { spring: 1, summer: 3, autumn: 0, winter: 0 } },
-                    { text: "클래식하고 내추럴한 스타일", scores: { spring: 0, summer: 0, autumn: 3, winter: 1 } },
-                    { text: "모던하고 세련된 스타일", scores: { spring: 0, summer: 1, autumn: 1, winter: 3 } }
-                ]
-            },
-            {
-                question: "검은색 옷을 입으면?",
-                options: [
-                    { text: "얼굴이 어두워 보인다", scores: { spring: 3, summer: 2, autumn: 2, winter: 0 } },
-                    { text: "얼굴이 또렷해 보인다", scores: { spring: 0, summer: 1, autumn: 1, winter: 3 } },
-                    { text: "잘 모르겠다", scores: { spring: 1, summer: 1, autumn: 1, winter: 1 } }
+                    { text: "코랄/오렌지/피치 계열 (따뜻하고 밝음)", scores: { spring: 4, summer: 0, autumn: 2, winter: 0 } },
+                    { text: "로즈/핑크/라벤더 계열 (부드럽고 시원함)", scores: { spring: 1, summer: 4, autumn: 0, winter: 2 } },
+                    { text: "브라운/벽돌레드/테라코타 계열 (깊고 따뜻함)", scores: { spring: 1, summer: 0, autumn: 4, winter: 0 } },
+                    { text: "와인/퓨샤/버건디 계열 (진하고 선명함)", scores: { spring: 0, summer: 2, autumn: 0, winter: 4 } }
                 ]
             }
         ];
@@ -761,6 +833,44 @@
         let answers = [];
         let scores = { spring: 0, summer: 0, autumn: 0, winter: 0 };
 
+        // 사운드 생성 함수 (Web Audio API)
+        function playClickSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playSuccessSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 1000;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
         // 화면 전환
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
@@ -775,7 +885,12 @@
             answers = [];
             scores = { spring: 0, summer: 0, autumn: 0, winter: 0 };
             showScreen('questionScreen');
+
+            // 채안 원장 패널 표시
+            document.getElementById('directorPanel').classList.add('active');
+
             displayQuestion();
+            playSuccessSound();
         }
 
         // 질문 표시
@@ -787,9 +902,16 @@
             document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
             document.getElementById('questionText').textContent = question.question;
 
-            // 채안 원장의 조언 메시지
+            // 채안 원장의 조언 메시지 (질문화면용)
             const messageIndex = Math.floor((currentQuestion / questions.length) * directorMessages.length);
-            document.getElementById('directorAdvice').textContent = '채안 원장: ' + directorMessages[Math.min(messageIndex, directorMessages.length - 1)];
+            const adviceElement = document.getElementById('directorAdvice');
+            if (adviceElement) {
+                adviceElement.textContent = '채안 원장: ' + directorMessages[Math.min(messageIndex, directorMessages.length - 1)];
+            }
+
+            // 채안 원장 패널 업데이트
+            document.getElementById('directorComment').textContent = question.directorComment;
+            document.getElementById('directorExtraTip').textContent = question.directorTip;
 
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
@@ -817,6 +939,9 @@
         function selectOption(optionIndex) {
             answers[currentQuestion] = optionIndex;
 
+            // 사운드 재생
+            playClickSound();
+
             // 선택된 옵션 표시
             document.querySelectorAll('.option').forEach((option, index) => {
                 if (index === optionIndex) {
@@ -833,10 +958,13 @@
         function nextQuestion() {
             if (answers[currentQuestion] === undefined) return;
 
+            playClickSound();
+
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 displayQuestion();
             } else {
+                playSuccessSound();
                 calculateResult();
             }
         }
