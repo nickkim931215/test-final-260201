@@ -13,12 +13,20 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            animation: gradientShift 10s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
@@ -59,10 +67,62 @@
             color: #333;
             margin-bottom: 20px;
             text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .director-intro {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .director-avatar {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .director-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #d63384;
+            margin-bottom: 5px;
+        }
+
+        .director-title {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .director-message {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .director-message::before {
+            content: "👩‍⚕️";
+            position: absolute;
+            left: -15px;
+            top: -15px;
+            font-size: 2em;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .director-message p {
+            margin: 0;
+            color: #d63384;
+            font-weight: 600;
         }
 
         .subtitle {
@@ -213,31 +273,59 @@
 
         .color-palette {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 12px;
             margin-top: 20px;
         }
 
         .color-item {
             aspect-ratio: 1;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: flex-end;
             justify-content: center;
             padding: 8px;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 100%);
         }
 
         .color-item:hover {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         }
 
         .color-name {
-            font-size: 0.75em;
-            font-weight: 600;
+            font-size: 0.7em;
+            font-weight: 700;
             color: white;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .palette-section {
+            margin-bottom: 25px;
+        }
+
+        .palette-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #667eea;
         }
 
         .tips-list {
@@ -342,11 +430,19 @@
         <div class="screen active" id="startScreen">
             <div class="content">
                 <h1>✨ 퍼스널 컬러 진단</h1>
+
+                <div class="director-intro">
+                    <div class="director-avatar">👩‍⚕️</div>
+                    <div class="director-name">채안 원장</div>
+                    <div class="director-title">퍼스널 컬러 전문가</div>
+                </div>
+
                 <p class="subtitle">
-                    나에게 어울리는 컬러를 찾아보세요!<br>
-                    간단한 질문으로 당신의 퍼스널 컬러 타입을 알아볼 수 있습니다.
+                    안녕하세요! 채안 원장입니다. 💁‍♀️<br>
+                    나에게 어울리는 컬러를 함께 찾아볼까요?<br>
+                    간단한 질문으로 당신만의 퍼스널 컬러 타입을 알려드릴게요!
                 </p>
-                <button class="btn" onclick="startTest()">테스트 시작하기</button>
+                <button class="btn" onclick="startTest()">🎨 채안 원장과 진단 시작하기</button>
             </div>
         </div>
 
@@ -356,12 +452,15 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
+                <div class="director-message">
+                    <p id="directorAdvice">채안 원장: 편안하게 직관적으로 선택해주세요! 💁‍♀️</p>
+                </div>
                 <div class="question-number" id="questionNumber"></div>
                 <h2 class="question-text" id="questionText"></h2>
                 <div class="options" id="optionsContainer"></div>
                 <div class="navigation">
-                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">이전</button>
-                    <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>다음</button>
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">⬅️ 이전</button>
+                    <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>다음 ➡️</button>
                 </div>
             </div>
         </div>
@@ -369,32 +468,34 @@
         <!-- 결과 화면 -->
         <div class="screen" id="resultScreen">
             <div class="result-header">
+                <div style="font-size: 2em; margin-bottom: 10px;">👩‍⚕️</div>
                 <div class="result-type" id="resultType"></div>
                 <div class="result-subtitle" id="resultSubtitle"></div>
             </div>
 
-            <div class="result-section">
-                <h2>💡 특징</h2>
-                <p id="resultDescription"></p>
+            <div class="result-section" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                <h2>👩‍⚕️ 채안 원장의 진단</h2>
+                <p id="resultDescription" style="font-weight: 500; color: #333;"></p>
             </div>
 
             <div class="result-section">
-                <h2>🎨 추천 컬러 팔레트</h2>
-                <div class="color-palette" id="colorPalette"></div>
+                <h2>🎨 채안 원장 추천 컬러 팔레트</h2>
+                <div id="allPalettes"></div>
             </div>
 
             <div class="result-section">
-                <h2>✨ 스타일링 팁</h2>
+                <h2>💄 채안 원장의 스타일링 팁</h2>
                 <ul class="tips-list" id="tipsList"></ul>
             </div>
 
             <div class="result-section">
-                <h2>⚠️ 피해야 할 색상</h2>
-                <p id="avoidColors"></p>
+                <h2>⚠️ 채안 원장: 이 색상은 피하세요!</h2>
+                <p id="avoidColors" style="font-weight: 500;"></p>
             </div>
 
             <div class="result-section">
                 <h2>🌟 같은 타입 유명인</h2>
+                <p style="color: #666; margin-bottom: 15px;">채안 원장이 선정한 대표 연예인들이에요!</p>
                 <div class="celebrities" id="celebrities"></div>
             </div>
 
@@ -514,20 +615,39 @@
             }
         ];
 
+        // 채안 원장의 조언 메시지
+        const directorMessages = [
+            "첫인상이 중요해요! 편하게 선택해주세요 💁‍♀️",
+            "좋아요! 계속 진행해볼까요? 🎨",
+            "벌써 절반이나 왔어요! 조금만 더 힘내세요 ✨",
+            "거의 다 왔어요! 당신의 컬러가 궁금해지네요 💕",
+            "마지막까지 집중해주세요! 곧 결과를 알려드릴게요 🌈"
+        ];
+
         // 결과 데이터
         const results = {
             spring: {
                 type: "봄 웜톤 (Spring Warm)",
                 subtitle: "생기 넘치는 따뜻한 봄꽃같은 당신",
-                description: "밝고 화사한 색상이 잘 어울리는 봄 웜톤입니다. 투명하고 맑은 피부에 따뜻한 노란 기운이 감돕니다. 코랄, 피치, 아이보리 같은 밝고 생동감 있는 색상이 얼굴을 더욱 생기있게 만들어줍니다.",
-                colors: [
-                    { color: "#FFB6C1", name: "피치" },
-                    { color: "#FF7F50", name: "코랄" },
-                    { color: "#FFF8DC", name: "아이보리" },
-                    { color: "#98FB98", name: "민트" },
-                    { color: "#FFD700", name: "골드" },
-                    { color: "#FFDAB9", name: "피치베이지" }
-                ],
+                description: "축하합니다! 당신은 밝고 화사한 색상이 잘 어울리는 봄 웜톤이에요. 투명하고 맑은 피부에 따뜻한 노란 기운이 감돌아 마치 봄날의 햇살처럼 생기가 넘치죠. 코랄, 피치, 아이보리 같은 밝고 생동감 있는 색상을 입으면 얼굴이 더욱 환하게 빛날 거예요!",
+                colors: {
+                    main: [
+                        { color: "#FFB6C1", name: "피치핑크" },
+                        { color: "#FF7F50", name: "코랄" },
+                        { color: "#FFF8DC", name: "아이보리" },
+                        { color: "#FFD700", name: "골드" },
+                        { color: "#FFDAB9", name: "피치베이지" },
+                        { color: "#F0E68C", name: "레몬" },
+                        { color: "#FFE4B5", name: "모카신" },
+                        { color: "#FFDEAD", name: "나바호화이트" }
+                    ],
+                    accent: [
+                        { color: "#98FB98", name: "민트" },
+                        { color: "#87CEEB", name: "스카이블루" },
+                        { color: "#FFB347", name: "오렌지" },
+                        { color: "#FF6B9D", name: "핑크" }
+                    ]
+                },
                 tips: [
                     "골드 톤 액세서리와 주얼리가 잘 어울립니다",
                     "코랄, 피치 컬러의 블러셔와 립스틱을 추천합니다",
@@ -541,15 +661,25 @@
             summer: {
                 type: "여름 쿨톤 (Summer Cool)",
                 subtitle: "우아하고 부드러운 여름 안개같은 당신",
-                description: "부드럽고 은은한 색상이 잘 어울리는 여름 쿨톤입니다. 맑고 투명한 피부에 시원한 푸른 기운이 감돕니다. 라벤더, 로즈핑크, 소프트 블루 같은 부드러운 파스텔 톤이 얼굴을 더욱 우아하게 만들어줍니다.",
-                colors: [
-                    { color: "#E6E6FA", name: "라벤더" },
-                    { color: "#FFB6D9", name: "로즈핑크" },
-                    { color: "#B0E0E6", name: "파우더블루" },
-                    { color: "#DDA0DD", name: "플럼" },
-                    { color: "#C0C0C0", name: "실버" },
-                    { color: "#F5F5DC", name: "베이지" }
-                ],
+                description: "정말 우아하세요! 당신은 부드럽고 은은한 색상이 완벽하게 어울리는 여름 쿨톤이에요. 맑고 투명한 피부에 시원한 푸른 기운이 감돌아 마치 여름날의 시원한 안개처럼 로맨틱한 분위기를 연출하죠. 라벤더, 로즈핑크, 소프트 블루 같은 부드러운 파스텔 톤이 당신을 더욱 우아하게 만들어줄 거예요!",
+                colors: {
+                    main: [
+                        { color: "#E6E6FA", name: "라벤더" },
+                        { color: "#FFB6D9", name: "로즈핑크" },
+                        { color: "#B0E0E6", name: "파우더블루" },
+                        { color: "#DDA0DD", name: "플럼" },
+                        { color: "#C0C0C0", name: "실버" },
+                        { color: "#F5F5DC", name: "베이지" },
+                        { color: "#E0B0FF", name: "모브" },
+                        { color: "#B19CD9", name: "퍼플" }
+                    ],
+                    accent: [
+                        { color: "#98D8C8", name: "민트블루" },
+                        { color: "#FFB6C1", name: "핑크" },
+                        { color: "#D8BFD8", name: "시슬" },
+                        { color: "#87CEEB", name: "하늘색" }
+                    ]
+                },
                 tips: [
                     "실버 톤 액세서리가 피부를 더욱 화사하게 만듭니다",
                     "로즈, 모브 컬러의 블러셔와 립스틱을 추천합니다",
@@ -563,15 +693,25 @@
             autumn: {
                 type: "가을 웜톤 (Autumn Warm)",
                 subtitle: "깊이 있는 따뜻한 가을 단풍같은 당신",
-                description: "깊고 차분한 색상이 잘 어울리는 가을 웜톤입니다. 따뜻하고 풍부한 느낌의 피부에 황금빛 기운이 감돕니다. 테라코타, 카키, 머스타드 같은 깊이 있는 어스 톤이 얼굴을 더욱 성숙하고 세련되게 만들어줍니다.",
-                colors: [
-                    { color: "#D2691E", name: "테라코타" },
-                    { color: "#BDB76B", name: "카키" },
-                    { color: "#CD853F", name: "카멜" },
-                    { color: "#8B4513", name: "브라운" },
-                    { color: "#DAA520", name: "골든로드" },
-                    { color: "#808000", name: "올리브" }
-                ],
+                description: "멋지세요! 당신은 깊고 차분한 색상이 완벽하게 어울리는 가을 웜톤이에요. 따뜻하고 풍부한 느낌의 피부에 황금빛 기운이 감돌아 마치 가을 단풍처럼 깊이 있고 매력적인 분위기를 연출하죠. 테라코타, 카키, 머스타드 같은 어스 톤 컬러가 당신을 더욱 성숙하고 세련되게 만들어줄 거예요!",
+                colors: {
+                    main: [
+                        { color: "#D2691E", name: "테라코타" },
+                        { color: "#BDB76B", name: "카키" },
+                        { color: "#CD853F", name: "카멜" },
+                        { color: "#8B4513", name: "브라운" },
+                        { color: "#DAA520", name: "골든로드" },
+                        { color: "#808000", name: "올리브" },
+                        { color: "#BC8F8F", name: "로즈브라운" },
+                        { color: "#CD5C5C", name: "인디언레드" }
+                    ],
+                    accent: [
+                        { color: "#DEB887", name: "버우드" },
+                        { color: "#D2B48C", name: "탄" },
+                        { color: "#F4A460", name: "샌디브라운" },
+                        { color: "#B8860B", name: "다크골든로드" }
+                    ]
+                },
                 tips: [
                     "골드 톤 액세서리가 피부 톤과 잘 어울립니다",
                     "브라운, 벽돌색 립스틱이 잘 어울립니다",
@@ -585,15 +725,25 @@
             winter: {
                 type: "겨울 쿨톤 (Winter Cool)",
                 subtitle: "또렷하고 차가운 겨울 눈꽃같은 당신",
-                description: "선명하고 강렬한 색상이 잘 어울리는 겨울 쿨톤입니다. 깨끗하고 맑은 피부에 차가운 기운이 감돕니다. 로열 블루, 와인, 퓨샤 같은 비비드한 색상이 얼굴을 더욱 또렷하고 도시적으로 만들어줍니다.",
-                colors: [
-                    { color: "#000080", name: "네이비" },
-                    { color: "#FF1493", name: "퓨샤" },
-                    { color: "#8B008B", name: "와인" },
-                    { color: "#000000", name: "블랙" },
-                    { color: "#FFFFFF", name: "화이트" },
-                    { color: "#4169E1", name: "로열블루" }
-                ],
+                description: "정말 시크하시네요! 당신은 선명하고 강렬한 색상이 완벽하게 어울리는 겨울 쿨톤이에요. 깨끗하고 맑은 피부에 차가운 기운이 감돌아 마치 겨울날의 맑은 공기처럼 또렷하고 세련된 분위기를 연출하죠. 로열 블루, 와인, 퓨샤 같은 비비드한 색상이 당신을 더욱 도시적이고 샤프하게 만들어줄 거예요!",
+                colors: {
+                    main: [
+                        { color: "#000080", name: "네이비" },
+                        { color: "#FF1493", name: "퓨샤" },
+                        { color: "#8B008B", name: "와인" },
+                        { color: "#000000", name: "블랙" },
+                        { color: "#FFFFFF", name: "화이트" },
+                        { color: "#4169E1", name: "로열블루" },
+                        { color: "#8B0000", name: "다크레드" },
+                        { color: "#4B0082", name: "인디고" }
+                    ],
+                    accent: [
+                        { color: "#00CED1", name: "다크터쿼이즈" },
+                        { color: "#DC143C", name: "크림슨" },
+                        { color: "#9370DB", name: "퍼플" },
+                        { color: "#FF69B4", name: "핫핑크" }
+                    ]
+                },
                 tips: [
                     "실버, 플래티넘 액세서리가 잘 어울립니다",
                     "비비드한 핑크, 레드 립스틱을 추천합니다",
@@ -636,6 +786,10 @@
             document.getElementById('progressFill').style.width = progress + '%';
             document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
             document.getElementById('questionText').textContent = question.question;
+
+            // 채안 원장의 조언 메시지
+            const messageIndex = Math.floor((currentQuestion / questions.length) * directorMessages.length);
+            document.getElementById('directorAdvice').textContent = '채안 원장: ' + directorMessages[Math.min(messageIndex, directorMessages.length - 1)];
 
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
@@ -737,15 +891,38 @@
             document.getElementById('resultSubtitle').textContent = result.subtitle;
             document.getElementById('resultDescription').textContent = result.description;
 
-            // 컬러 팔레트
-            const paletteContainer = document.getElementById('colorPalette');
-            paletteContainer.innerHTML = '';
-            result.colors.forEach(colorItem => {
+            // 컬러 팔레트 (메인 + 악센트)
+            const allPalettes = document.getElementById('allPalettes');
+            allPalettes.innerHTML = '';
+
+            // 메인 컬러
+            const mainSection = document.createElement('div');
+            mainSection.className = 'palette-section';
+            mainSection.innerHTML = '<div class="palette-title">✨ 기본 추천 컬러</div><div class="color-palette" id="mainPalette"></div>';
+            allPalettes.appendChild(mainSection);
+
+            const mainPalette = mainSection.querySelector('#mainPalette');
+            result.colors.main.forEach(colorItem => {
                 const div = document.createElement('div');
                 div.className = 'color-item';
                 div.style.background = colorItem.color;
                 div.innerHTML = `<span class="color-name">${colorItem.name}</span>`;
-                paletteContainer.appendChild(div);
+                mainPalette.appendChild(div);
+            });
+
+            // 악센트 컬러
+            const accentSection = document.createElement('div');
+            accentSection.className = 'palette-section';
+            accentSection.innerHTML = '<div class="palette-title">💫 포인트 컬러</div><div class="color-palette" id="accentPalette"></div>';
+            allPalettes.appendChild(accentSection);
+
+            const accentPalette = accentSection.querySelector('#accentPalette');
+            result.colors.accent.forEach(colorItem => {
+                const div = document.createElement('div');
+                div.className = 'color-item';
+                div.style.background = colorItem.color;
+                div.innerHTML = `<span class="color-name">${colorItem.name}</span>`;
+                accentPalette.appendChild(div);
             });
 
             // 스타일링 팁
